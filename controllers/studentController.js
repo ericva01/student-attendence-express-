@@ -1,12 +1,25 @@
 const db = require("../models");
-const Student = db.Student;
+const Student = db.STUDENTS;
+const Joi = require('joi');
 
 // Create and Save a new Student
 exports.create = (req, res) => {
     // Validate request
-    if (!req.body.first_name) {
-        res.status(400).send({
-            message: "Content can not be empty!"
+    const schema = Joi.object({
+        first_name: Joi.string().required(),
+        last_name: Joi.string().required(),
+        gender: Joi.string().length(1).required(),
+        date_of_birth: Joi.date().required(),
+        phone: Joi.string().required(),
+        class_id: Joi.number().integer().required(),
+    });
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+        res.status(400).json({
+            statuscode: 400,
+            message: error.details[0].message,
+            data: null
         });
         return;
     }
@@ -24,12 +37,17 @@ exports.create = (req, res) => {
     // Save Student in the database
     Student.create(student)
         .then(data => {
-            res.send(data);
+            res.status(201).json({
+                statuscode: 201,
+                message: "Student created successfully.",
+                data: data
+            });
         })
         .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while creating the Student."
+            res.status(500).json({
+                statuscode: 500,
+                message: err.message || "Some error occurred while creating the Student.",
+                data: null
             });
         });
 };
@@ -38,12 +56,17 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     Student.findAll()
         .then(data => {
-            res.send(data);
+            res.status(200).json({
+                statuscode: 200,
+                message: "Students retrieved successfully.",
+                data: data
+            });
         })
         .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving students."
+            res.status(500).json({
+                statuscode: 500,
+                message: err.message || "Some error occurred while retrieving students.",
+                data: null
             });
         });
 };
@@ -55,16 +78,24 @@ exports.findOne = (req, res) => {
     Student.findByPk(id)
         .then(data => {
             if (data) {
-                res.send(data);
+                res.status(200).json({
+                    statuscode: 200,
+                    message: "Student retrieved successfully.",
+                    data: data
+                });
             } else {
-                res.status(404).send({
-                    message: `Cannot find Student with id=${id}.`
+                res.status(404).json({
+                    statuscode: 404,
+                    message: `Cannot find Student with id=${id}.`,
+                    data: null
                 });
             }
         })
         .catch(err => {
-            res.status(500).send({
-                message: "Error retrieving Student with id=" + id
+            res.status(500).json({
+                statuscode: 500,
+                message: "Error retrieving Student with id=" + id,
+                data: null
             });
         });
 };
@@ -78,18 +109,24 @@ exports.update = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Student was updated successfully."
+                res.status(200).json({
+                    statuscode: 200,
+                    message: "Student was updated successfully.",
+                    data: null
                 });
             } else {
-                res.send({
-                    message: `Cannot update Student with id=${id}. Maybe Student was not found or req.body is empty!`
+                res.status(404).json({
+                    statuscode: 404,
+                    message: `Cannot update Student with id=${id}. Maybe Student was not found or req.body is empty!`,
+                    data: null
                 });
             }
         })
         .catch(err => {
-            res.status(500).send({
-                message: "Error updating Student with id=" + id
+            res.status(500).json({
+                statuscode: 500,
+                message: "Error updating Student with id=" + id,
+                data: null
             });
         });
 };
@@ -103,18 +140,24 @@ exports.delete = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Student was deleted successfully!"
+                res.status(200).json({
+                    statuscode: 200,
+                    message: "Student was deleted successfully!",
+                    data: null
                 });
             } else {
-                res.send({
-                    message: `Cannot delete Student with id=${id}. Maybe Student was not found!`
+                res.status(404).json({
+                    statuscode: 404,
+                    message: `Cannot delete Student with id=${id}. Maybe Student was not found!`,
+                    data: null
                 });
             }
         })
         .catch(err => {
-            res.status(500).send({
-                message: "Could not delete Student with id=" + id
+            res.status(500).json({
+                statuscode: 500,
+                message: "Could not delete Student with id=" + id,
+                data: null
             });
         });
 };

@@ -1,12 +1,13 @@
 const db = require("../models");
-const Subject = db.Subject;
+const Subject = db.SUBJECTS;
 
 // Create and Save a new Subject
 exports.create = (req, res) => {
     // Validate request
     if (!req.body.subject_name) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "Content can not be empty!",
+            statuscode: 400
         });
         return;
     }
@@ -19,12 +20,17 @@ exports.create = (req, res) => {
     // Save Subject in the database
     Subject.create(subject)
         .then(data => {
-            res.send(data);
+            res.status(200).send({
+                message: "Subject created successfully.",
+                statuscode: 200,
+                data: data
+            });
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while creating the Subject."
+                    err.message || "Some error occurred while creating the Subject.",
+                statuscode: 500
             });
         });
 };
@@ -33,12 +39,17 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     Subject.findAll()
         .then(data => {
-            res.send(data);
+            res.status(200).send({
+                message: "Subjects retrieved successfully.",
+                statuscode: 200,
+                data: data
+            });
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving subjects."
+                    err.message || "Some error occurred while retrieving subjects.",
+                statuscode: 500
             });
         });
 };
@@ -50,16 +61,22 @@ exports.findOne = (req, res) => {
     Subject.findByPk(id)
         .then(data => {
             if (data) {
-                res.send(data);
+                res.status(200).send({
+                    message: "Subject retrieved successfully.",
+                    statuscode: 200,
+                    data: data
+                });
             } else {
                 res.status(404).send({
-                    message: `Cannot find Subject with id=${id}.`
+                    message: `Cannot find Subject with id=${id}.`,
+                    statuscode: 404
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Error retrieving Subject with id=" + id
+                message: err.message ||"Error retrieving Subject with id=" + id,
+                statuscode: 500
             });
         });
 };
@@ -73,18 +90,20 @@ exports.update = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Subject was updated successfully."
+                res.status(200).send({
+                    message: "Subject was updated successfully.",
+                    statuscode: 200
                 });
             } else {
-                res.send({
+                res.status(404).send({
                     message: `Cannot update Subject with id=${id}. Maybe Subject was not found or req.body is empty!`
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Error updating Subject with id=" + id
+                message: err.message || "Error updating Subject with id=" + id,
+                statuscode: 500
             });
         });
 };
@@ -98,18 +117,22 @@ exports.delete = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Subject was deleted successfully!"
+                res.status(200).send({
+                    message: "Subject was deleted successfully!",
+                    statuscode: 200
                 });
             } else {
-                res.send({
-                    message: `Cannot delete Subject with id=${id}. Maybe Subject was not found!`
+                res.status(404).send({
+                    message: `Cannot delete Subject with id=${id}. Maybe Subject was not found!`,
+                    statuscode: 404
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Could not delete Subject with id=" + id
+                message: 
+                    err.message || "Could not delete Subject with id=" + id,
+                statuscode: 500
             });
         });
 };

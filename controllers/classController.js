@@ -1,5 +1,5 @@
 const db = require("../models");
-const Class = db.Class;
+const Class = db.CLASSES;
 
 // Create and Save a new Class
 exports.create = (req, res) => {
@@ -15,13 +15,16 @@ exports.create = (req, res) => {
     const newClass = {
         class_name: req.body.class_name,
         academic_year: req.body.academic_year,
-        teacher_id: req.body.teacher_id,
     };
 
     // Save Class in the database
     Class.create(newClass)
         .then(data => {
-            res.send(data);
+            res.send({
+                message: `Class ${data.class_name} was created successfully.`,
+                statuscode: 201,
+                data: data
+            });
         })
         .catch(err => {
             res.status(500).send({
@@ -29,6 +32,8 @@ exports.create = (req, res) => {
                     err.message || "Some error occurred while creating the Class."
             });
         });
+
+        
 };
 
 // Retrieve all Classes from the database.

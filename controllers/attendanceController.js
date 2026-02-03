@@ -1,5 +1,5 @@
 const db = require("../models");
-const Attendance = db.Attendance;
+const Attendance = db.ATTENDENTS;
 
 // Create and Save a new Attendance
 exports.create = (req, res) => {

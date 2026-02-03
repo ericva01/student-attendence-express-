@@ -1,12 +1,13 @@
 const db = require("../models");
-const Teacher = db.Teacher;
+const Teacher = db.TEACHERS;
 
 // Create and Save a new Teacher
 exports.create = (req, res) => {
     // Validate request
     if (!req.body.teacher_name) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "Content can not be empty!",
+            statuscode: 400
         });
         return;
     }
@@ -21,12 +22,17 @@ exports.create = (req, res) => {
     // Save Teacher in the database
     Teacher.create(teacher)
         .then(data => {
-            res.send(data);
+            res.status(200).send({
+                message: "Teacher created successfully.",
+                statuscode: 200,
+                data: data
+            });
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while creating the Teacher."
+                    err.message || "Some error occurred while creating the Teacher.",
+                statuscode: 500
             });
         });
 };
@@ -35,12 +41,17 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     Teacher.findAll()
         .then(data => {
-            res.send(data);
+            res.status(200).send({
+                message: "Teachers retrieved successfully.",
+                statuscode: 200,
+                data: data
+            });
         })
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || "Some error occurred while retrieving teachers."
+                    err.message || "Some error occurred while retrieving teachers.",
+                statuscode: 500
             });
         });
 };
@@ -52,16 +63,22 @@ exports.findOne = (req, res) => {
     Teacher.findByPk(id)
         .then(data => {
             if (data) {
-                res.send(data);
+                res.status(200).send({
+                    message: "Teacher retrieved successfully.",
+                    statuscode: 200,
+                    data: data
+                });
             } else {
                 res.status(404).send({
-                    message: `Cannot find Teacher with id=${id}.`
+                    message: `Cannot find Teacher with id=${id}.`,
+                    statuscode: 404
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Error retrieving Teacher with id=" + id
+                message: err.message || "Error retrieving Teacher with id=" + id,
+                statuscode: 500
             });
         });
 };
@@ -75,18 +92,21 @@ exports.update = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Teacher was updated successfully."
+                res.status(200).send({
+                    message: "Teacher was updated successfully.",
+                    statuscode: 200
                 });
             } else {
-                res.send({
-                    message: `Cannot update Teacher with id=${id}. Maybe Teacher was not found or req.body is empty!`
+                res.status(404).send({
+                    message: `Cannot update Teacher with id=${id}. Maybe Teacher was not found or req.body is empty!`,
+                    statuscode: 404
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Error updating Teacher with id=" + id
+                message: err.message || "Error updating Teacher with id=" + id,
+                statuscode: 500
             });
         });
 };
@@ -100,18 +120,20 @@ exports.delete = (req, res) => {
     })
         .then(num => {
             if (num == 1) {
-                res.send({
-                    message: "Teacher was deleted successfully!"
+                res.status(200).send({
+                    message: "Teacher was deleted successfully!",
                 });
             } else {
-                res.send({
-                    message: `Cannot delete Teacher with id=${id}. Maybe Teacher was not found!`
+                res.status(404).send({
+                    message: `Cannot delete Teacher with id=${id}. Maybe Teacher was not found!`,
+                    statuscode: 404
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Could not delete Teacher with id=" + id
+                message: err.message || "Could not delete Teacher with id=" + id,
+                statuscode: 500
             });
         });
 };
